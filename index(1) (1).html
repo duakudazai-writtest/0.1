@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Leaf of the Pumpkin</title>
+
+<!-- Old-letter fonts: printed/ink-like, NOT cursive -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+
+<style>
+* { box-sizing: border-box; }
+
+:root {
+    --paper: #ead8b1;
+    --paper-dark: #d2b986;
+    --ink: #30251c;
+    --purple: #5d3d69;
+    --purple-light: #86618f;
+    --gold: #8d7040;
+    --night: #17111a;
+}
+
+html, body {
+    margin: 0;
+    min-height: 100%;
+}
+
+body {
+    background:
+        radial-gradient(circle at 20% 10%, #3b2a3d 0, transparent 28%),
+        radial-gradient(circle at 80% 90%, #3c2a35 0, transparent 30%),
+        var(--night);
+    color: var(--ink);
+    font-family: "Cormorant Garamond", Georgia, serif;
+    overflow-x: hidden;
+}
+
+/* subtle paper grain */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: .12;
+    z-index: 100;
+    background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.45'/%3E%3C/svg%3E");
+}
+
+.stage {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 22px 10px 82px;
+}
+
+.book {
+    width: min(94vw, 760px);
+    height: min(82vh, 850px);
+    min-height: 610px;
+    position: relative;
+    perspective: 1800px;
+}
+
+/* Every sheet */
+.page {
+    position: absolute;
+    inset: 0;
+    padding: clamp(38px, 7vw, 76px) clamp(30px, 8vw, 84px);
+    background:
+        radial-gradient(circle at 8% 12%, rgba(255,255,255,.3), transparent 24%),
+        radial-gradient(circle at 88% 82%, rgba(82,53,24,.14), transparent 30%),
+        var(--paper);
+    box-shadow:
+        0 20px 55px rgba(0,0,0,.58),
+        inset 0 0 55px rgba(87,56,21,.16);
+    border: 1px solid rgba(91,66,35,.25);
+    border-radius: 2px 7px 7px 2px;
+    transform-origin: left center;
+    backface-visibility: hidden;
+    transition:
+        transform 1s cubic-bezier(.66,.02,.28,1),
+        box-shadow .7s ease;
+    overflow: hidden;
+}
+
+.page::before {
+    content: "";
+    position: absolute;
+    inset: 13px;
+    border: 1px solid rgba(91,66,35,.28);
+    pointer-events: none;
+}
+
+.page::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    box-shadow: inset 0 0 75px rgba(66,40,14,.14);
+}
+
+.page.flipped {
+    transform: rotateY(-180deg);
+}
+
+.page.current {
+    box-shadow:
+        0 22px 60px rgba(0,0,0,.6),
+        inset 0 0 55px rgba(87,56,21,.16);
+}
+
+/* Decorative corners */
+.corner {
+    position: absolute;
+    font-size: 27px;
+    color: var(--purple);
+    opacity: .72;
+    z-index: 2;
+}
+.tl { top: 25px; left: 27px; transform: rotate(-20deg); }
+.tr { top: 25px; right: 27px; transform: rotate(20deg) scaleX(-1); }
+.bl { bottom: 25px; left: 27px; transform: rotate(160deg); }
+.br { bottom: 25px; right: 27px; transform: rotate(-160deg) scaleX(-1); }
+
+/* Botanical decorations */
+.orchid {
+    position: absolute;
+    z-index: 2;
+    color: var(--purple);
+    opacity: .78;
+    line-height: .8;
+    text-shadow: 0 1px 1px rgba(48,28,50,.15);
+}
+.orchid span { display: block; }
+.orchid.top-left { top: 44px; left: 34px; transform: rotate(-15deg); }
+.orchid.bottom-right { bottom: 35px; right: 35px; transform: rotate(12deg); }
+.orchid.bottom-left { bottom: 33px; left: 34px; transform: rotate(-8deg) scale(.85); }
+
+.flower {
+    font-size: 31px;
+}
+.flower.small {
+    font-size: 22px;
+    margin-left: 18px;
+}
+
+.vine {
+    position: absolute;
+    color: #514b32;
+    opacity: .55;
+    font-size: 42px;
+    z-index: 2;
+}
+.vine.left { left: 20px; top: 38%; transform: rotate(-90deg); }
+.vine.right { right: 20px; top: 42%; transform: rotate(90deg); }
+
+/* Pumpkin decorations */
+.pumpkin {
+    position: absolute;
+    z-index: 3;
+    font-size: 58px;
+    filter: sepia(.15);
+    opacity: .92;
+    text-shadow: 0 3px 4px rgba(55,29,10,.22);
+}
+.pumpkin.bottom-left {
+    left: 27px;
+    bottom: 35px;
+}
+.pumpkin.bottom-right {
+    right: 28px;
+    bottom: 35px;
+    font-size: 47px;
+}
+
+/* Cover */
+.cover {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background:
+        radial-gradient(circle at 50% 42%, rgba(255,241,199,.35), transparent 38%),
+        #cdb27b;
+}
+
+.cover::before {
+    border-color: rgba(77,49,77,.42);
+}
+
+.cover .eyebrow {
+    font-family: "IM Fell English", Georgia, serif;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    font-size: 13px;
+    opacity: .68;
+    margin-bottom: 22px;
+}
+
+.cover h1 {
+    font-family: "IM Fell English", Georgia, serif;
+    font-weight: 400;
+    font-size: clamp(47px, 10vw, 84px);
+    line-height: .93;
+    margin: 0;
+    color: #30251c;
+}
+
+.cover .rule {
+    margin: 27px 0 20px;
+    color: var(--purple);
+    letter-spacing: 9px;
+    font-size: 17px;
+}
+
+.cover .subtitle {
+    font-family: "IM Fell English", Georgia, serif;
+    font-size: 18px;
+    font-style: italic;
+    opacity: .75;
+}
+
+.cover .pumpkin {
+    font-size: 72px;
+}
+
+/* Letter text */
+.letter {
+    position: relative;
+    z-index: 4;
+    height: 100%;
+    overflow: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(93,61,105,.4) transparent;
+
+    /* old printed handwriting feel without cursive */
+    font-family: "IM Fell English", Georgia, serif;
+    font-size: clamp(18px, 3vw, 24px);
+    line-height: 1.52;
+    letter-spacing: .01em;
+}
+
+.letter .date {
+    text-align: right;
+    font-family: "Cormorant Garamond", Georgia, serif;
+    font-size: 15px;
+    opacity: .6;
+    margin-bottom: 25px;
+}
+
+.poem {
+    margin: 0;
+    white-space: pre-line;
+}
+
+.page-number {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 19px;
+    text-align: center;
+    z-index: 5;
+    font-size: 13px;
+    opacity: .5;
+}
+
+.signature {
+    margin-top: 48px;
+    text-align: right;
+    font-family: "IM Fell English", Georgia, serif;
+    font-size: 25px;
+}
+
+/* Controls */
+.controls {
+    position: fixed;
+    z-index: 200;
+    bottom: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 9px;
+}
+
+button {
+    border: 1px solid rgba(234,216,177,.4);
+    background: rgba(25,18,26,.9);
+    color: #ead8b1;
+    padding: 10px 17px;
+    border-radius: 4px;
+    font: 14px Georgia, serif;
+    cursor: pointer;
+}
+
+button:active { transform: translateY(1px); }
+button:disabled { opacity: .3; cursor: default; }
+
+.hint {
+    position: fixed;
+    top: 13px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 200;
+    color: #d9c6a0;
+    font: 12px Georgia, serif;
+    opacity: .68;
+    white-space: nowrap;
+}
+
+/* Mobile */
+@media (max-width: 600px) {
+    .stage {
+        padding: 12px 6px 80px;
+    }
+
+    .book {
+        width: 96vw;
+        height: 80vh;
+        min-height: 590px;
+    }
+
+    .page {
+        padding: 43px 27px 50px;
+    }
+
+    .page::before {
+        inset: 10px;
+    }
+
+    .letter {
+        font-size: 19px;
+        line-height: 1.46;
+    }
+
+    .cover h1 {
+        font-size: 55px;
+    }
+
+    .pumpkin {
+        font-size: 47px;
+    }
+
+    .orchid .flower {
+        font-size: 25px;
+    }
+
+    .hint {
+        font-size: 11px;
+        top: 8px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="hint">Tap the left or right side of the page to turn it.</div>
+
+<div class="stage">
+<div class="book" id="book">
+
+    <!-- COVER -->
+    <section class="page current cover">
+        <div class="corner tl">❧</div>
+        <div class="corner tr">❧</div>
+
+        <div class="orchid top-left">
+            <span class="flower">✿</span>
+            <span class="flower small">❀</span>
+        </div>
+
+        <div class="orchid bottom-right">
+            <span class="flower">✿</span>
+            <span class="flower small">❀</span>
+        </div>
+
+        <div class="pumpkin bottom-left">🎃</div>
+
+        <div class="eyebrow">a letter written in ink</div>
+        <h1>Leaf of<br>the Pumpkin</h1>
+        <div class="rule">✦ ─── ❦ ─── ✦</div>
+        <div class="subtitle">for the one who made the cold bloom</div>
+
+        <div class="page-number">I</div>
+    </section>
+
+    <!-- PAGE 1 -->
+    <section class="page">
+        <div class="corner tl">❧</div>
+        <div class="corner tr">❧</div>
+        <div class="orchid bottom-right">
+            <span class="flower">✿</span>
+            <span class="flower small">❀</span>
+        </div>
+        <div class="pumpkin bottom-left">🎃</div>
+
+        <div class="letter">
+            <div class="date">For you,</div>
+            <p class="poem">I may only be a poet,
+a pair of hands
+that bloom ink
+instead of holding warmth,
+a mouth
+that learned to bleed language
+instead of saying stay.
+
+But for you
+I’d write on forgetting things:
+teach water your name
+until it drowns in itself,
+stitch syllables into the wind
+and call it a body.
+
+Let me press this love
+into places that refuse to keep me.
+
+a shadow,
+and I’ll raise it into a skyline,
+a map without oceans,
+and I’ll drag a ship across its bones,
+a pen with no pulse,
+and I’ll still force it
+to confess you.</p>
+        </div>
+        <div class="page-number">II</div>
+    </section>
+
+    <!-- PAGE 2 -->
+    <section class="page">
+        <div class="corner tl">❧</div>
+        <div class="corner br">❧</div>
+        <div class="orchid top-left">
+            <span class="flower">✿</span>
+            <span class="flower small">❀</span>
+        </div>
+
+        <div class="letter">
+            <p class="poem">If that’s not enough.
+then listen.
+
+listen to how silence bends,
+how it breaks and mends,
+how every unsaid thing
+learns the shape of a hymn,
+until even the quiet
+starts to form you:
+into something
+you can finally hear.</p>
+        </div>
+
+        <div class="page-number">III</div>
+    </section>
+
+    <!-- PAGE 3 -->
+    <section class="page">
+        <div class="corner tl">❧</div>
+        <div class="corner tr">❧</div>
+        <div class="orchid bottom-left">
+            <span class="flower">✿</span>
+            <span class="flower small">❀</span>
+        </div>
+        <div class="pumpkin bottom-right">🎃</div>
+
+        <div class="letter">
+            <p class="poem">Bestow upon me an eternity of frozen grounds,
+A breeze that chills no more than death,
+Or dim, dense clouds that shut away
+The faintest drop of warmth.
+
+A world that bled in blue and white,
+Left bruised beneath a lightless sky.
+
+Its heart confides within the darkness,
+Now resting in the palms of youth,
+Where the harshest glaciers thaw.
+
+With every breath you take,
+Comes a new, rejuvenating wind.
+You shatter the angry clouds,
+And beneath their wreckage, light leaks through.
+
+And it shines upon you.</p>
+        </div>
+
+        <div class="page-number">IV</div>
+    </section>
+
+    <!-- PAGE 4 -->
+    <section class="page">
+        <div class="corner tl">❧</div>
+        <div class="corner br">❧</div>
+        <div class="orchid bottom-right">
+            <span class="flower">✿</span>
+            <span class="flower small">❀</span>
+        </div>
+        <div class="orchid top-left">
+            <span class="flower small">❀</span>
+        </div>
+
+        <div class="letter">
+            <p class="poem">At last, my eyes are graced by your beauty;
+The air itself feeds me a share of life,
+And my heart begins to beat along with yours.
+
+Although you did nothing but exist,
+You somehow kept the flower blooming—
+
+Even after it was plucked
+From the very earth that gave it life.</p>
+
+            <div class="signature">- perry</div>
+        </div>
+
+        <div class="page-number">V</div>
+    </section>
+
+</div>
+</div>
+
+<div class="controls">
+    <button id="prev">← Previous</button>
+    <button id="next">Next →</button>
+</div>
+
+<script>
+const pages = [...document.querySelectorAll(".page")];
+let current = 0;
+
+function render() {
+    pages.forEach((page, i) => {
+        page.classList.toggle("flipped", i < current);
+        page.classList.toggle("current", i === current);
+
+        if (i < current) {
+            page.style.zIndex = i + 1;
+        } else {
+            page.style.zIndex = pages.length - i;
+        }
+    });
+
+    document.getElementById("prev").disabled = current === 0;
+    document.getElementById("next").disabled = current === pages.length - 1;
+}
+
+function nextPage() {
+    if (current < pages.length - 1) {
+        current++;
+        render();
+    }
+}
+
+function previousPage() {
+    if (current > 0) {
+        current--;
+        render();
+    }
+}
+
+document.getElementById("next").addEventListener("click", nextPage);
+document.getElementById("prev").addEventListener("click", previousPage);
+
+document.getElementById("book").addEventListener("click", function(e) {
+    if (e.target.closest("button")) return;
+
+    const rect = this.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+
+    if (x > rect.width / 2) {
+        nextPage();
+    } else {
+        previousPage();
+    }
+});
+
+document.addEventListener("keydown", function(e) {
+    if (e.key === "ArrowRight") nextPage();
+    if (e.key === "ArrowLeft") previousPage();
+});
+
+render();
+</script>
+
+</body>
+</html>
